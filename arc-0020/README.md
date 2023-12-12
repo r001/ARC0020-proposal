@@ -1,11 +1,11 @@
 ---
-arc: 0000 # Add the next sequence number
-title: # Title
-authors: # Add all Github usernames, emails, and/or full names
-discussion: # Create a 'Github Discussion' titled 'ARC-XXXX: {TITLE}`
-topic: # Choose: Protocol, Network, or Application
+arc: 0020 # Add the next sequence number
+title: Another token standard proposal with smart contract capabilities
+authors: Robert Horvath
+discussion: https://github.com/r001/ARC0020-proposal/discussions/1 #Create a 'Github Discussion' titled 'ARC-XXXX: {TITLE}`
+topic: Application # Choose: Protocol, Network, or Application
 status: Draft
-created: # Date
+created: 12/12/20023 # Date
 ---
 
 ## Abstract
