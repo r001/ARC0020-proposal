@@ -34,32 +34,38 @@ In recent days Aleo has introduced signature verification in the snarkVM. This m
 
 If a feature is termed "MUST BE IMPLEMENTED" then it means that the feature is mandatory to be implemented to comply to this ARC. 
 
-#### 2.1.3. SHOULD BE IMPLEMENTED
+#### 2.1.3. MUST NOT BE IMPLEMENTED
+
+If a feature is termed "MUST NOT BE IMPLEMENTED" then it means that the feature must NOT be implemented to comply to this ARC. Implementing this feature will lead to non-compliance to this ARC.
+
+An implementation of the feature can lead to immediate token loss for users.
+
+#### 2.1.4. SHOULD BE IMPLEMENTED
 
 If a feature is termed "SHOULD BE IMPLEMENTED" then it means that the feature is not mandatory to be implemented to comply to this ARC, but it is highly recommended to be implemented. 
 
-#### 2.1.4. NOT NEEDED
+#### 2.1.5. NOT NEEDED
 
 If a feature is termed "NOT NEEDED" then it means that current ARC defines an alternative way of achieving the same functionality. 
 
-#### 2.1.5. NOT IMPLEMENTABLE
+#### 2.1.6. NOT IMPLEMENTABLE
 
 If a feature is termed "NOT IMPLEMENTABLE" then it means that current implementation of snarkVM does not make it possible to implement the certain feature. 
 
-#### 2.1.6. MUST BE
+#### 2.1.7. MUST BE
 
 If a feature is termed "MUST BE" then it means that the feature is mandatory to be implemented accordingly to comply to this ARC. 
 
-#### 2.1.7. MUST HAVE
+#### 2.1.8. MUST HAVE
 
 If a feature is termed "MUST HAVE" then it means that the feature must contain something exactly the way it was defined after "MUST HAVE" was used to comply to this ARC. 
 
-#### 2.1.7. MUST
+#### 2.1.9. MUST
 
 Whatever follows MUST that must be implemented exactly as it was defined after "MUST" to comply with this ARC.
 
 <a name="zero_address"></a>
-#### 2.1.8. ZERO_ADDRESS
+#### 2.1.10. ZERO_ADDRESS
 
 ```leo
 const ZERO_ADDRESS: address = aleo1yr9ls3d7cn2x2sr359kqq7vjkwnzr4x0e24ju6ysj2pte4c99c8qx0rwwl;
@@ -72,7 +78,7 @@ Because of hashing applied the way above, the chance of an account will have the
 
 
 <a name="mpc"></a>
-#### 2.1.9. MPC (Multi Party Computation)
+#### 2.1.11. MPC (Multi Party Computation)
 
 [Multi Party Computation](https://coinmarketcap.com/academy/article/what-are-multi-party-computation-mpc-wallets) is a decentralized solution of storing a private key in a federated way thus making it impossible for any party (even the ones that are part of the MPC) to have access to the private key.  It can be used to create wallets that can be used to store private keys for contracts. The MPC MUST HAVE the following features:
 1. The private key MUST be used to sign transactions, but  MUST NOT be possible to reconstruct the private key for any parties in the MPC or outside the MPC.
@@ -82,7 +88,7 @@ Because of hashing applied the way above, the chance of an account will have the
 5. Compliance SHOULD BE implemented in the MPC system. This way authorities can request the MPC cluster to reveal a subset of data predefined by smart contracts.
 
 <a name="si"></a>
-#### 2.1.10. `self.signer`
+#### 2.1.12. `self.signer`
 
 The account address whose private key is used to sign the transaction and decode encrypted records, is called `self.signer`. `self.signer` is always an account address. (As long as federated signature scheme is not introduced in aleo.
 
@@ -91,7 +97,7 @@ The account address whose private key is used to sign the transaction and decode
 See [Aleo documentation](https://developer.aleo.org/leo/language#selfcaller) for details.
 
 <a name="sc"></a>
-#### 2.1.11. `self.caller`
+#### 2.1.13. `self.caller`
 
 The address of an account or a contract that called the transition is called `self.caller`. See figure above for details. 
 
