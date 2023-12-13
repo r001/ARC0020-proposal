@@ -92,7 +92,7 @@ Because of hashing applied the way above, the chance of an account will have the
 <a name="si"></a>
 #### 2.1.12. `self.signer`
 
-The account address whose private key is used to sign the transaction and decode encrypted records, is called `self.signer`. `self.signer` is always an account address. (As long as federated signature scheme is not introduced in aleo.
+The account address whose private key is used to sign the transaction and decode encrypted records, is called `self.signer`. `self.signer` is always an account address. (As long as federated signature scheme is not introduced in Aleo).
 
 ![Self signer](./images/self_caller_self_signer.png)
 
@@ -153,6 +153,10 @@ As in the [`transfer_from_public()`](#tp) transition the signature parameter con
 `const decimals : u8`: constant containing the deimal precision of the current token.
 
 ##### 2.2.6.1. Decimals transition - NOT NEEDED
+~~`decimals() -> u8`~~: transition returning the decimal precision of the current token.
+
+This transition is not needed as the [`decimals`](#decimals) constant is already defined for the same purpose.
+
 ###### Rationale for not having decimals as a transition
 
 As `decimals` is a constant  (see [above](#decimals)), and MUST BE IMPLEMENTED, it is easy to query and provide it as input of any transition necessary. There is no need to implement an extra function for this.
@@ -330,7 +334,7 @@ credit {
 
 Deposit privately works as follows:
 1. User calls the Smart Contract's `deposit_private(credit, ...)` transition. (The name of the transition is not important, it can be anything.)
-2. During the execution of `deposit()`, the Smart Contract calls the `transfer_private(to: aleo1mpc, amount: 10M, credit: credit)` function on ARC20 contract.
+2. During the execution of `deposit_private()`, the Smart Contract calls the `transfer_private(to: aleo1mpc, amount: 10M, credit: credits)` function on ARC20 contract using the record provided by user in previous step.
 3. ARC20 contract consumes the received `credit` record, and creates a new one with the followings:
 
 ```
