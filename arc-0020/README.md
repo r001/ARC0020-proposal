@@ -344,6 +344,10 @@ credit {
     microcredits: 10M
 }
 ```
+
+This record can not be sent to any other contract than `aleo1contract`, because that MUST BE denied by ARC20 contract. MPC can only send the record to `aleo1contract` and the predefined transitions of `aleo1contract` will limit what can be done with the credit record.
+
+
 #### 2.3.2 Deposit using `transfer_from_public()` transition
 <!-- TODO:  create -->
 
