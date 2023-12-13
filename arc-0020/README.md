@@ -126,11 +126,10 @@ A unicode string of byte length of 16. The left most character of string should 
 
 <a name="company-signature"></a>
 #### 2.2.3. Company signature - MUST BE IMPLEMENTED
-TODO: find out signature scheme
 
 ##### 2.2.3.1 Rationale for company signature
 
-Idea this that Companies that create smart contracts must be able to have a standardized mechanism to connect their contracts to their website. This can be done by createing a standardized URL: CAU - Company Addresses URL, that MUST return the JSON array of signer addresses of the company. On the smart contract side all contracts MUST HAVE a constant called `company_signature` that MUST BE the signature of the contract name created by the private key of the signer address. This way users can check if the contract is belonging to the Company.
+Idea this that Companies that create smart contracts must be able to have a standardized mechanism to connect their contracts to their website. This can be done by createing a standardized URL: CAU - Company Addresses URL, that MUST return the JSON array of signer addresses and corresponding CAU signatures of the company. On the smart contract side all contracts MUST HAVE a constant called `company_signature` that MUST BE the signature of the contract name created by the private key of the signer address. This way users can check if the contract is belonging to the Company.
 
 <a name="csc"></a>
 ##### 2.2.3.2 Company signature constant - MUST BE IMPLEMENTED
