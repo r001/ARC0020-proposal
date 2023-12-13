@@ -192,11 +192,11 @@ To ensure that a contract is indeed belonging to the company, ALL of the followi
     3. `signing_account` is the `account` that the same as in (1.) above.
 `cau_signature` signature ensures that the JSON array of addresses indeed belong to the Company Accounts URL.
     
-    If `signing_account` does indeed satisfy (2.) then there is a mathematical proof that this account indeed signed the `cau` URL, thus the CAU has legitimately listed the account as its own.
+    If `signing_account` and `cau_signature` do indeed satisfy (2.) then there is a mathematical proof that this account indeed signed the `cau` URL, thus the CAU has legitimately listed the account as its own. This gives protection against sites falsely claiming that `accounts` are theirs.
     
-    If none of the returned accounts satisfy (1.) and (2.) then the contract MUST BE considered as not belonging to the company.
+    If [`company_signature`](#csc) and none of the returned `account`s and corresponding `cau_signatures` satisfy both (1.) and (2.) then the contract MUST BE considered as not belonging to the company.
 
-    IF BOTH (1.) and (2.) are satisfied by `signing_account` and corresponding `cau_signature` then the contract MUST BE considered as belonging to the company.
+    IF BOTH (1.) and (2.) are satisfied by [`company_signature`](#csc), `signing_account` and corresponding `cau_signature` then the contract MUST BE considered as belonging to the company.
 
 #### 2.2.4. Approve of tokens - NOT NEEDED
 
