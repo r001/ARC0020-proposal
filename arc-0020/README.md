@@ -245,8 +245,23 @@ The `authorization` is NOT public, this way it is impossible for third party to 
 
 It MUST be possible to transfer tokens to contracts using this transition.
 
+##### 2.2.8.6. Transition creating the hash to be signed - MUST BE IMPLEMENTED
+
+`hash_to_sign(  
+    public to: address,  
+    public amount: u64,  
+    public from: address,  
+    public expire: u32  
+) -> field`: returns the hash of the data that needs to be signed by `from` address to create the `authorization` signature. 
+
+This transition MUST create the hash that can be used to create the `authorization` signature offchain. 
+
+This transition is used to generate the `signature` parameter for [``transfer_from_public()`](#tp) transition.
+
+<!-- TODO: implement to example -->
+
 <a name="transfer-private"></a>
-##### 2.2.8.5. Transfer tokens privately - MUST BE IMPLEMENTED
+##### 2.2.8.6. Transfer tokens privately - MUST BE IMPLEMENTED
 
 `transfer_private(to: address, amount: u64, credit: credits) -> (credits,credits)`: send from [`self.signer`](#si) (the transition's signer's)  address to `to` address an amount of `amount` of tokens of `credit` privately. 
 
@@ -264,19 +279,32 @@ It MUST return a tuple of two records in the order below:
 
 It MUST be able to transfer tokens to contracts using this transition.
 
-##### 2.2.8.6. Transfer tokens privately with `contract` property - MUST NOT BE IMLMENTED
+##### 2.2.8.7. Transfer tokens privately with `contract` property - MUST NOT BE IMLMENTED
 
 ~~`transfer_private(to: address, amount: u64, contract: address, credit: credits) -> (credits,credits)`~~: This function would enable to send private token record to a Smart Contract with MPC, by directly setting the `to` and `contract` fields of the resulting record.
 
 This transition MUST NOT BE IMPLEMENTED as users CAN confuse the `to` address with `contract` address, and that leads to token loss. While [pocedure 2.3.1](#deposit-private) can do this safely without having to introduce a new transition.
 
-##### 2.2.8.6. Transfer tokens of another account privately - NOT IMPLEMENTABLE
+##### 2.2.8.8. Transfer tokens of another account privately - NOT IMPLEMENTABLE
 
 This functionality is not implementable with current setup. But the same functionality can be achieved by using [`transfer_public_to_private()`](#transfer-public-to-private) and [`transfer_private()`](#transfer-private). 
 
-#### 2.2.10. Total Supply - NOT IMPLEMENTABLE
+#### 2.2.10. Total Supply transition - NOT IMPLEMENTABLE
 
-`total_supply()`: returns `u128` the total amount of tokens currently in circulation.
+~~`total_supply()`~~: returns `u128` the total amount of tokens currently in circulation.
+
+#### 2.2.10. Total Supply mapping - NOT IMPLEMENTABLE
+
+```
+mapping total_supply : bool => u128;
+```
+<!-- TODO: implement to example -->
+
+`Mapping::get(total_supply, true)` MUST return  `u128` the total amount of tokens currently in circulation.
+
+If a token is minted, then this mapping must be updated. If a token is burned, then this mapping must also be updated. 
+
+
 
 ## 2.3 Procedures 
 
