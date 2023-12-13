@@ -110,7 +110,7 @@ See [Aleo documentation](https://developer.aleo.org/leo/language#selfcaller) for
 In this session the transitions, constants, and mappings are defined. Wherever name is specified for a transition, constant, or mapping, it is mandatory to use the specific name and the specific type(s) specified in this ARC. 
 
 #### 2.2.1. Name of token - MUST BE IMPLEMENTED
-<!-- TODO: find out type -->
+TODO: find out type
 
 `const name : u128`: the name of the token. Eg: "Aleo Credits"  
 
@@ -118,7 +118,7 @@ A unicode string of byte length of 16. The left most character of string should 
 
 #### 2.2.2. Symbol of token - MUST BE IMPLEMENTED
 
-<!-- TODO: find out type -->
+TODO: find out type
 
 `const symbol : u128`: the symbol of the token. Eg: "ALEO"  
 
@@ -126,9 +126,75 @@ A unicode string of byte length of 16. The left most character of string should 
 
 <a name="company-signature"></a>
 #### 2.2.3. Company signature - MUST BE IMPLEMENTED
-<!-- TODO: find out signature scheme -->
-There is an URL, an address and a signature.
-Idea this signature connects the token to the website of the company. This way all the token contracts can be linked to the company website. TODO: finish this section.
+TODO: find out signature scheme
+
+##### 2.2.3.1 Rationale for company signature
+
+Idea this that Companies that create smart contracts must be able to have a standardized mechanism to connect their contracts to their website. This can be done by createing a standardized URL: CAU - Company Addresses URL, that MUST return the JSON array of signer addresses of the company. On the smart contract side all contracts MUST HAVE a constant called `company_signature` that MUST BE the signature of the contract name created by the private key of the signer address. This way users can check if the contract is belonging to the Company.
+
+##### 2.2.3.2 Company signature constant - MUST BE IMPLEMENTED
+
+```leo
+constant company_signature: signature = sign<signature>;
+```
+
+`signature` must be created by Aleo signing scheme the following way:
+
+`signature = aleo::sign_message(<program_name>, pk)`: where 
+1. `aleo::sign_message` is the [message signing scheme](https://developer.aleo.org/aleo/language/#signatures) of Aleo.
+2. `<program_name>` is the name of the ARC20 token. Eg: "ARC20_0001.aleo". The extension of the program name MUST BE ".aleo".
+3. `pk` is the private key of the `account_address` of company. 
+
+
+##### 2.2.3.3 CAU - Company Accounts URL - MUST BE IMPLEMENTED
+
+CAU - Company Accounts URL: `https://<company-domain.com>/aleo_signer_accounts/` 
+
+where `<company-domain.com>` is the domain name of the company. 
+
+This URL called upon by the GET method must return a JSON array of objects each containing 
+1. `account`: Aleo address whose private keys are used by company to sign its contracts, and 
+2. `cau_signature` a signature that connects the CAU to the `account`.
+
+Example return: 
+
+```json
+[
+    {
+        "account": "aleo1qz34g0zdl0ztlval9vxer75uf2t9q7jgf4g8cuxv5q5c8lz6x5rssucpm5", 
+        "cau_signature": "sign01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    }, 
+    {
+        "account": "aleo1yx5aq4tsgvraxu63vtjq5tqefkwcv4pk7yxyc5hswl7jdlktggyqf4a52f"
+        "cau_signature": "sign02222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222"
+    },
+    {
+        "account": "aleo17wmuq5n08vs0tt356uhc6hlljy8c95zteqpa2ne8kcw3sa0rt5yqg7jdys",
+        "cau_signature": "sign03333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333"
+    }
+]
+```
+To ensure that a contract is indeed belonging to the company, ALL of the following conditions MUST BE satisfied:
+
+1. Lets assume that from the returned list of accounts an account called `signing_account` satisfies the following equality:
+
+    `aleo::verify_message(program_name, company_signature, signing_account) == true`: where 
+    1. `program_name` is the name of the ARC20 token. Eg: "ARC20_0001.aleo". The extension of the program name MUST BE ".aleo".
+    2. `company_signature` is the signature of the `program_name` created by the private key of the `account` address.
+    3. `signing_account` is the current address returned by Company Accounts URL. 
+
+    If `signing_account` does indeed satisfy (1.) then there is a mathematical proof that this account indeed signed the `program_name` program.
+
+2. `cau_signature` belonging to `signing_account` MUST satisfy the result of `aleo::verify_message(cau,signing_account) == ture`, where 
+    1. `cau` is the CAU - Company Accounts URL.
+    2. `signing_account` is the `account` that the same as in (1.) above.
+`cau_signature` signature ensures that the JSON array of addresses indeed belong to the Company Accounts URL.
+    
+    If `signing_account` does indeed satisfy (2.) then there is a mathematical proof that this account indeed signed the `cau` URL, thus the CAU has legitimately listed the account as its own.
+    
+    If none of the returned accounts satisfy (1.) and (2.) then the contract MUST BE considered as not belonging to the company.
+
+    IF BOTH (1.) and (2.) are satisfied by `signing_account` then the contract MUST BE considered as belonging to the company.
 
 #### 2.2.4. Approve of tokens - NOT NEEDED
 
@@ -268,7 +334,7 @@ This transition is only needed as long as there is no easy alternative offchain 
 
 Contracts MUST NOT rely on the availability of this transition, as it is not mandatory. 
 
-<!-- TODO: implement to example -->
+TODO: implement to example
 
 <a name="transfer-private"></a>
 ##### 2.2.8.6. Transfer tokens privately - MUST BE IMPLEMENTED
@@ -308,7 +374,7 @@ This functionality is not implementable with current setup. But the same functio
 ```
 mapping total_supply : bool => u64;
 ```
-<!-- TODO: implement to example -->
+TODO: implement to example
 
 `Mapping::get(total_supply, true)` MUST return  `u64` the total amount of tokens currently in circulation.
 
@@ -348,14 +414,20 @@ credit {
 This record can not be sent by MPC to any other contract than `aleo1contract`, because that MUST BE denied by ARC20 contract. MPC can only send the record to `aleo1contract` and the predefined transitions of `aleo1contract` will limit what can be done with the credit record.
 
 
-#### 2.3.2 Deposit using `transfer_from_public()` transition
-<!-- TODO:  create -->
+#### 2.3.2. Deposit using `transfer_from_public()` transition
 
-#### 2.3.3 Deposit using `transfer_public_to_private()` transition
-<!-- TODO:  create -->
+TODO:  create
 
-#### 2.3.4 Deposit using `transfer_private_to_public()` transition
-<!-- TODO:  create -->
+#### 2.3.3. Deposit using `transfer_public_to_private()` transition
+
+TODO:  create
+
+#### 2.3.4. Deposit using `transfer_private_to_public()` transition
+
+TODO:  create
+
+#### 2.3.5. Deposit using `transfer_private_to_public()` transition
+TODO:  create
 
 <!-- Describe the architecture. -->
 
