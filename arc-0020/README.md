@@ -177,14 +177,14 @@ Example return:
 ```
 To ensure that a contract is indeed belonging to the company, ALL of the following conditions MUST BE satisfied:
 
-1. Lets assume that from the returned list of accounts an account called `signing_account` MUST satisfy the following equality:
+1. Lets assume that from the returned list of accounts an account called `signing_account` does satisfy the following equality:
 
     `aleo::verify_message(program_name, company_signature, signing_account) == true`: where 
     1. `program_name` is the name of the ARC20 token. Eg: "ARC20_0001.aleo". The extension of the program name MUST BE ".aleo".
     2. [`company_signature`](#csc) is the signature of the `program_name` created by the private key of the `account` address.
     3. `signing_account` is the current address returned by Company Accounts URL. 
 
-    If `signing_account` does indeed satisfy (1.) then there is a mathematical proof that this account indeed signed the `program_name` program.
+    If `signing_account` does indeed satisfy (1.) then there is a mathematical proof that this account indeed has signed the `program_name` program.
 
 2. `cau_signature` belonging to `signing_account` MUST satisfy the `aleo::verify_message(cau, cau_signature, signing_account) == ture` equation, where 
     1. `cau` is the [CAU - Company Accounts URL](#cau).
