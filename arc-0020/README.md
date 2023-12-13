@@ -11,12 +11,14 @@ created: 12/12/20023 # Date
 ## 1. Abstract
 
 There are several ARC-20 implementation standard proposals for the Aleo blockchain. The current ideas try are based on the already successful Ethereum ERC-20 standard. We would like to point out two issues with the present solutions that should be altered namely:
-1. `approve()` functionality (by which a smart contract can be authorized to control some (or all) of users tokens) should be replaced by an offchain signature to approve a so called transaction, and an onchain function that can apply that signature. This way smart contract interaction does not have to be a two step, but rather a one step process. This solution will save system resources as the approve() part is offchain rather than onchain.
-2. A solution that enables Tokens to be sent to smart contracts privately. This problem must be addressed because one of the key selling points of Aleo is its programmable privacy. The author of this ARC also believes that to utilize the UTXO nature of Token records also leads to a much larger scalability than that can be achieved applying mappings and public tokens.
+1. Replaced onchain `approve()` functionality with [offchain signature](#tp) - `approve()` transition should not be implemented, instead user can agree to send token to a contract offchain using an offchain signature process to approve a transaction, and an onchain function eg [`transfer_from_public()`](#tp) that can apply that signature. This way smart contract interaction does not have to be a two step, but rather a one step process. This solution will save system resources as the approve part is offchain rather than onchain.
+2. Enable [private token records to be sent to smart contracts](#deposit-private) - This problem must be addressed because one of the key selling points of Aleo is its programmable privacy. The author of this ARC also believes that to utilize the UTXO nature of Token records also leads to a much larger scalability than that can be achieved applying mappings and public tokens.
+3. A signature scheme that [connects the contract with the main website](#company-signature) of the project. Thus make it easier for users to trust the token contract, and decrease the possibility of phishing attacks.
 
 By applying the proposals pointed out in this ARC the token standard will be more usable because of:
-1. one step approval process applying off chain signature, instead of two steps of `approve()` and `transfer_public()`, and 
+1. one step approval process applying off chain signature, instead of two steps of `approve()` and `transfer_from()`, and 
 2. the ability to send private tokens to smart contracts will enable a thriving DeFi life on top of the Aleo network.
+3. make token contracts more secure by connecting them to the company website with a digital signature.
 
 
 <!-- If someone only reads this far, what do you want them to know? -->
@@ -122,6 +124,7 @@ A unicode string of byte length of 16. The left most character of string should 
 
 A unicode string of byte length of 16. The left most character of string should be the highest byte of the `u128` number. As an example "ALEO" should be encoded as follows: `0x414C454F000000000000000000000000 = 86795840032555669230657698889553936384u128`. If `string` type is included in Aleo specification, this ARC must be updated.
 
+<a name="company-signature"></a>
 #### 2.2.3. Company signature - MUST BE IMPLEMENTED
 <!-- TODO: find out signature scheme -->
 There is an URL, an address and a signature.
