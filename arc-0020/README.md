@@ -237,26 +237,32 @@ It MUST be possible to transfer tokens to contracts using this transition.
     public to: address,  
     public amount: u64,  
     public from: address,  
-    authorization: signature,  
     public expire: u32  
+    authorization: signature,  
 ) -> ()`: transfers from `from` address to `to` address an amount of `amount` tokens using the  `authorization` signature previously created by `from` address offline, if the `block.height` is less than `expire`. 
 
 The `authorization` is NOT public, this way it is impossible for third party to replay attack user's tokens. Note: `allowance()` furnction is not needed in this design, as the signature contains the approval. 
 
 It MUST be possible to transfer tokens to contracts using this transition.
 
-##### 2.2.8.6. Transition creating the hash to be signed - MUST BE IMPLEMENTED
+##### 2.2.8.6. Transition creating the hash to be signed - SHOULD BE IMPLEMENTED
 
 `hash_to_sign(  
-    public to: address,  
-    public amount: u64,  
-    public from: address,  
-    public expire: u32  
+    to: address,  
+    amount: u64,  
+    from: address,  
+    expire: u32  
 ) -> field`: returns the hash of the data that needs to be signed by `from` address to create the `authorization` signature. 
+
+All the parameters MUST BE private.  
 
 This transition MUST create the hash that can be used to create the `authorization` signature offchain. 
 
 This transition is used to generate the `signature` parameter for [``transfer_from_public()`](#tp) transition.
+
+This transition is only needed as long as there is no easy alternative offchain solution is found to create the hash offchain.
+
+Contracts MUST NOT rely on the availability of this transition, as it is not mandatory. 
 
 <!-- TODO: implement to example -->
 
