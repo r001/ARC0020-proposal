@@ -185,9 +185,10 @@ To ensure that a contract is indeed belonging to the company, ALL of the followi
 
     If `signing_account` does indeed satisfy (1.) then there is a mathematical proof that this account indeed signed the `program_name` program.
 
-2. `cau_signature` belonging to `signing_account` MUST satisfy the result of `aleo::verify_message(cau,signing_account) == ture`, where 
+2. `cau_signature` belonging to `signing_account` MUST satisfy the result of `aleo::verify_message(cau, cau_signature, signing_account) == ture`, where 
     1. `cau` is the CAU - Company Accounts URL.
-    2. `signing_account` is the `account` that the same as in (1.) above.
+    2. `cau_signature` is the signature of the CAU created by the private key of the `signing_account` address.
+    3. `signing_account` is the `account` that the same as in (1.) above.
 `cau_signature` signature ensures that the JSON array of addresses indeed belong to the Company Accounts URL.
     
     If `signing_account` does indeed satisfy (2.) then there is a mathematical proof that this account indeed signed the `cau` URL, thus the CAU has legitimately listed the account as its own.
