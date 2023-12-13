@@ -132,6 +132,7 @@ TODO: find out signature scheme
 
 Idea this that Companies that create smart contracts must be able to have a standardized mechanism to connect their contracts to their website. This can be done by createing a standardized URL: CAU - Company Addresses URL, that MUST return the JSON array of signer addresses of the company. On the smart contract side all contracts MUST HAVE a constant called `company_signature` that MUST BE the signature of the contract name created by the private key of the signer address. This way users can check if the contract is belonging to the Company.
 
+<a name="csc"></a>
 ##### 2.2.3.2 Company signature constant - MUST BE IMPLEMENTED
 
 ```leo
@@ -180,7 +181,7 @@ To ensure that a contract is indeed belonging to the company, ALL of the followi
 
     `aleo::verify_message(program_name, company_signature, signing_account) == true`: where 
     1. `program_name` is the name of the ARC20 token. Eg: "ARC20_0001.aleo". The extension of the program name MUST BE ".aleo".
-    2. `company_signature` is the signature of the `program_name` created by the private key of the `account` address.
+    2. [`company_signature`](#csc) is the signature of the `program_name` created by the private key of the `account` address.
     3. `signing_account` is the current address returned by Company Accounts URL. 
 
     If `signing_account` does indeed satisfy (1.) then there is a mathematical proof that this account indeed signed the `program_name` program.
