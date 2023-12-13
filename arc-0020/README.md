@@ -260,7 +260,7 @@ This transition MUST create the hash that can be used to create the `authorizati
 
 This transition is used to generate the `signature` parameter for [``transfer_from_public()`](#tp) transition.
 
-This transition is only needed as long as there is no easy alternative offchain solution is found to create the hash offchain.
+This transition is only needed as long as there is no easy alternative offchain solution is found to create the hash.
 
 Contracts MUST NOT rely on the availability of this transition, as it is not mandatory. 
 
