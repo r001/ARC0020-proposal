@@ -147,6 +147,7 @@ constant company_signature: signature = sign<signature>;
 3. `pk` is the private key of the `account_address` of company. 
 
 
+<a name="cau"></a>
 ##### 2.2.3.3 CAU - Company Accounts URL - MUST BE IMPLEMENTED
 
 CAU - Company Accounts URL: `https://<company-domain.com>/aleo_signer_accounts/` 
@@ -186,8 +187,8 @@ To ensure that a contract is indeed belonging to the company, ALL of the followi
 
     If `signing_account` does indeed satisfy (1.) then there is a mathematical proof that this account indeed signed the `program_name` program.
 
-2. `cau_signature` belonging to `signing_account` MUST satisfy the result of `aleo::verify_message(cau, cau_signature, signing_account) == ture`, where 
-    1. `cau` is the CAU - Company Accounts URL.
+2. `cau_signature` belonging to `signing_account` MUST satisfy the `aleo::verify_message(cau, cau_signature, signing_account) == ture` equation, where 
+    1. `cau` is the [CAU - Company Accounts URL](#cau).
     2. `cau_signature` is the signature of the CAU created by the private key of the `signing_account` address.
     3. `signing_account` is the `account` that the same as in (1.) above.
 `cau_signature` signature ensures that the JSON array of addresses indeed belong to the Company Accounts URL.
@@ -196,7 +197,7 @@ To ensure that a contract is indeed belonging to the company, ALL of the followi
     
     If none of the returned accounts satisfy (1.) and (2.) then the contract MUST BE considered as not belonging to the company.
 
-    IF BOTH (1.) and (2.) are satisfied by `signing_account` then the contract MUST BE considered as belonging to the company.
+    IF BOTH (1.) and (2.) are satisfied by `signing_account` and corresponding `cau_signature` then the contract MUST BE considered as belonging to the company.
 
 #### 2.2.4. Approve of tokens - NOT NEEDED
 
