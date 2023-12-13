@@ -252,7 +252,7 @@ It MUST be possible to transfer tokens to contracts using this transition.
     amount: u64,  
     from: address,  
     expire: u32  
-) -> field`: returns the hash of the data that needs to be signed by `from` address to create the `authorization` signature. 
+) -> field`: returns the hash of the data that needs to be signed by `from` address to create the `authorization` signature for [`transfer_from_public()`](#tp). 
 
 All the parameters MUST BE private.  
 
