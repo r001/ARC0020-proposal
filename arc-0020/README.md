@@ -177,7 +177,7 @@ Example return:
 ```
 To ensure that a contract is indeed belonging to the company, ALL of the following conditions MUST BE satisfied:
 
-1. Lets assume that from the returned list of accounts an account called `signing_account` satisfies the following equality:
+1. Lets assume that from the returned list of accounts an account called `signing_account` MUST satisfy the following equality:
 
     `aleo::verify_message(program_name, company_signature, signing_account) == true`: where 
     1. `program_name` is the name of the ARC20 token. Eg: "ARC20_0001.aleo". The extension of the program name MUST BE ".aleo".
