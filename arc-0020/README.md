@@ -442,7 +442,7 @@ TODO:  create
 
 <!-- Include process diagrams. -->
 
-### 2.3. Test Cases
+### 2.4. Test Cases
 
 This section should introduce any and all critical test cases that need to be considered for the specification.
 
