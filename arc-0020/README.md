@@ -131,6 +131,8 @@ A unicode string of byte length of 16. The left most character of string should 
 
 Idea this that Companies that create smart contracts must be able to have a standardized mechanism to connect their contracts to their website. This can be done by createing a standardized URL: CAU - Company Addresses URL, that MUST return the JSON array of signer addresses and corresponding CAU signatures of the company. On the smart contract side all contracts MUST HAVE a constant called `company_signature` that MUST BE the signature of the contract name created by the private key of the signer address. This way users can check if the contract is belonging to the Company.
 
+Blockhain explorers can utilize this feature to display the website that the contract belongs to. Explorers can request the [CAU](#cau) URL from developer, when the contract is verified, and then display the website of the company to the users. This way users can be sure that the contract is indeed belonging to the certain company.
+
 <a name="csc"></a>
 ##### 2.2.3.2 Company signature constant - MUST BE IMPLEMENTED
 
