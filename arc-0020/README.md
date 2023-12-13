@@ -386,7 +386,7 @@ If a token is minted, then this mapping must be updated. If a token is burned, t
 
 Contracts MUST NOT rely on the availability of this mapping, as it is not mandatory. 
 
-##### 2.2.10.1 Rationale of not having Total Supply transition in a mandatory way
+##### 2.2.10.1 Rationale of not having Total Supply mapping in a mandatory way
 
 Maintaining the `total_supply` in a mapping means that for each `mint()` and `burn()` function this mapping must be updated. And as it is a mapping, it means that all validators must re-run the transaction, which is `O(n)` difficulty, where `n` is the number of instructions. This is much less scalable as if the `total_supply`  is maintained as a record, and each validator only has to check the validity of the proof, which is `O(1)` difficulty. Thus making the contract more scalable.
 
