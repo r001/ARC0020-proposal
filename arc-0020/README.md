@@ -94,7 +94,7 @@ Because of hashing applied the way above, the chance of an account will have the
 
 The account address whose private key is used to sign the transaction and decode encrypted records, is called `self.signer`. `self.signer` is always an account address. (As long as federated signature scheme is not introduced in aleo.
 
-![Self signer](./arc-0020/images/self_caller_self_signer.png)
+![Self signer](./images/self_caller_self_signer.png)
 
 See [Aleo documentation](https://developer.aleo.org/leo/language#selfcaller) for details.
 
@@ -299,17 +299,16 @@ This functionality is not implementable with current setup. But the same functio
 
 ~~`total_supply()`~~: returns `u128` the total amount of tokens currently in circulation.
 
-#### 2.2.10. Total Supply mapping - NOT IMPLEMENTABLE
+#### 2.2.10. Total Supply mapping - MUST BE IMPLEMENTED
 
 ```
-mapping total_supply : bool => u128;
+mapping total_supply : bool => u64;
 ```
 <!-- TODO: implement to example -->
 
-`Mapping::get(total_supply, true)` MUST return  `u128` the total amount of tokens currently in circulation.
+`Mapping::get(total_supply, true)` MUST return  `u64` the total amount of tokens currently in circulation.
 
 If a token is minted, then this mapping must be updated. If a token is burned, then this mapping must also be updated. 
-
 
 
 ## 2.3 Procedures 
@@ -317,7 +316,7 @@ If a token is minted, then this mapping must be updated. If a token is burned, t
 <a name="deposit-private"></a>
 #### 2.3.1. Deposit private token record to contract
 
-![Deposit tokens](./arc-0020/images/deposit_token.png)
+![Deposit tokens](./images/deposit_token.png)
 
 User has an address of `aleo1user`, Smart Contract has a contract address of `aleo1contract`, and MPC has an account address of `aleo1mpc`. User has a record with the following fields:
 
