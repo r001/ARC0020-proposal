@@ -46,6 +46,8 @@ An implementation of the feature can lead to immediate token loss for users.
 
 If a feature is termed "SHOULD BE IMPLEMENTED" then it means that the feature is not mandatory to be implemented to comply to this ARC, but it is highly recommended to be implemented. 
 
+If the feature is indeed implemented, then it MUST BE implemented in a way described in this ARC. 
+
 #### 2.1.5. NOT NEEDED
 
 If a feature is termed "NOT NEEDED" then it means that current ARC defines an alternative way of achieving the same functionality. 
@@ -105,33 +107,41 @@ The address of an account or a contract that called the transition is called `se
 
 See [Aleo documentation](https://developer.aleo.org/leo/language#selfcaller) for details.
 
+#### 2.1.14. Hacker
+
+Hacker is an entity that tries to alter the behavior of the system in a way that is not intended by the system. 
+
 ### 2.2. Specification 
 
 In this session the transitions, constants, and mappings are defined. Wherever name is specified for a transition, constant, or mapping, it is mandatory to use the specific name and the specific type(s) specified in this ARC. 
 
 #### 2.2.1. Name of token - MUST BE IMPLEMENTED
-TODO: find out type
 
-`const name : u128`: the name of the token. Eg: "Aleo Credits"  
+`const name : field`: the name of the token. Eg: "Aleo Credits"  
 
-A unicode string of byte length of 16. The left most character of string should be the highest byte of the `u128` number. As an example "Aleo Credits" must be encoded as follows: `0x416C656F206372656469747300000000  = 86962645114461045215243575462861996032u128`. If `string` type is included in Aleo specification, this ARC must be updated.
+A unicode string of byte length of 16. The left most character of string should be the highest byte of the `field` number. As an example "Aleo Credits" must be encoded as follows: `0x416C656F20637265646974730000000000000000000000000000000000000000  = 29591854713254390051098558719843710286620636002170764447558050801690808942592field`. 
+
+Once `string` type is included in Aleo specification, this ARC must be updated.
 
 #### 2.2.2. Symbol of token - MUST BE IMPLEMENTED
 
-TODO: find out type
 
-`const symbol : u128`: the symbol of the token. Eg: "ALEO"  
+`const symbol : field`: the symbol of the token. Eg: "ALEO"  
 
-A unicode string of byte length of 16. The left most character of string should be the highest byte of the `u128` number. As an example "ALEO" should be encoded as follows: `0x414C454F000000000000000000000000 = 86795840032555669230657698889553936384u128`. If `string` type is included in Aleo specification, this ARC must be updated.
+A unicode string of byte length of 16. The left most character of string should be the highest byte of the `field` number. As an example "ALEO" should be encoded as follows: `0x414C454F00000000000000000000000000000000000000000000000000000000 = 29535093885169187707116277799267314899879263164026335641338301482164084015104field`. 
+
+Once `string` type is included in Aleo specification, this ARC must be updated.
 
 <a name="company-signature"></a>
 #### 2.2.3. Company signature - MUST BE IMPLEMENTED
 
 ##### 2.2.3.1 Rationale for company signature
 
-Idea this that Companies that create smart contracts must be able to have a standardized mechanism to connect their contracts to their website. This can be done by createing a standardized URL: CAU - Company Addresses URL, that MUST return the JSON array of signer addresses and corresponding CAU signatures of the company. On the smart contract side all contracts MUST HAVE a constant called `company_signature` that MUST BE the signature of the contract name created by the private key of the signer address. This way users can check if the contract is belonging to the Company.
+Companies that create smart contracts must be able to have a standardized mechanism to connect their contracts to their website. This can be done by createing a standardized URL: CAU - Company Addresses URL, that MUST return the JSON array of signer addresses and corresponding CAU signatures of the company. On the smart contract side all contracts MUST HAVE a constant called `company_signature` that MUST BE the signature of the contract name created by the private key of the signer address. This way users can check if the contract is belonging to the Company.
 
 Blockhain explorers can utilize this feature to display the website that the contract belongs to. Explorers can request the [CAU](#cau) URL from developer, when the contract is verified, and then display the website of the company to the users. This way users can be sure that the contract is indeed belonging to the certain company.
+
+Wallets can use the same mechanism to check legitimacy of a specific contract the same way explorers can. 
 
 <a name="csc"></a>
 ##### 2.2.3.2 Company signature constant - MUST BE IMPLEMENTED
@@ -157,6 +167,10 @@ where `<company-domain.com>` is the domain name of the company.
 
 This URL called upon by the GET method must return a JSON array of objects each containing 
 1. `account`: Aleo address whose private keys are used by company to sign its contracts, and 
+2. `status`: String that MUST BE one of `active`, `exprired`, and `compromised`.
+    1. If account is `active` it means that it is actively propagated by the Company owning CAU and the account is not compromised.
+    2. If account is `expired` it means that Company has disowned the contract, and users should treat contract as if it is not belonging to the Company.
+    3. If account is `compromised` it means that the private key has been compromised, and Company has disowned the contract, and users should treat contract as if it is not belonging to the Company. 
 2. `cau_signature` a signature that connects the CAU to the `account`.
 
 Example return: 
@@ -165,19 +179,22 @@ Example return:
 [
     {
         "account": "aleo1qz34g0zdl0ztlval9vxer75uf2t9q7jgf4g8cuxv5q5c8lz6x5rssucpm5", 
+        "status": "active",
         "cau_signature": "sign01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
     }, 
     {
         "account": "aleo1yx5aq4tsgvraxu63vtjq5tqefkwcv4pk7yxyc5hswl7jdlktggyqf4a52f"
+        "status": "active",
         "cau_signature": "sign02222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222"
     },
     {
         "account": "aleo17wmuq5n08vs0tt356uhc6hlljy8c95zteqpa2ne8kcw3sa0rt5yqg7jdys",
+        "status": "expired",
         "cau_signature": "sign03333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333"
     }
 ]
 ```
-To ensure that a contract is indeed belonging to the company, ALL of the following conditions MUST BE satisfied:
+To ensure that a contract is indeed belonging to the company, both of the following conditions MUST BE satisfied:
 
 1. Lets assume that from the returned list of accounts an account called `signing_account` does satisfy the following equality:
 
@@ -188,8 +205,9 @@ To ensure that a contract is indeed belonging to the company, ALL of the followi
 
     If `signing_account` does indeed satisfy (1.) then there is a mathematical proof that this account indeed has signed the `program_name` program.
 
-2. `cau_signature` belonging to `signing_account` MUST satisfy the `aleo::verify_message(cau, cau_signature, signing_account) == ture` equation, where 
+2. `cau_signature` belonging to `signing_account` MUST satisfy the `aleo::verify_message(concatenate(cau, status), cau_signature, signing_account) == ture` equation, where 
     1. `cau` is the [CAU - Company Accounts URL](#cau).
+    2. `status` is the status of the `signing_account`. 
     2. `cau_signature` is the signature of the CAU created by the private key of the `signing_account` address.
     3. `signing_account` is the `account` that the same as in (1.) above.
 `cau_signature` signature ensures that the JSON array of addresses indeed belong to the Company Accounts URL.
@@ -199,6 +217,22 @@ To ensure that a contract is indeed belonging to the company, ALL of the followi
 If [`company_signature`](#csc) and none of the returned `account`s and corresponding `cau_signatures` satisfy both (1.) and (2.) then the contract MUST BE considered as not belonging to the company.
 
 IF BOTH (1.) and (2.) are satisfied by [`company_signature`](#csc), `signing_account` and corresponding `cau_signature` then the contract MUST BE considered as belonging to the company.
+
+##### 2.2.3.4 Invalidate signature - SHOULD BE IMPLEMENTED
+
+To remove signature validity Companies MUST change the `status` field to `expired` of the associated `account` from the CAU JSON array. This way the signature will not be valid anymore. 
+
+##### 2.2.3.5 Change CAU URL - SHOULD BE IMPLEMENTED
+
+In case of rebranding or other reasons Companies CAN change the CAU URL. The `cau_signature` MUST BE updated to sign the new CAU and associate those to `account` addresses in returned JSON array. 
+
+They also should update the CAU with blockchain explorers.
+
+##### 2.2.3.6 Compromised private key of signing `account` - SHOULD BE IMPLEMENTED
+
+In case private key of signing `account` is compromised, then the `status` field MUST BE set to `compromised` in the returned JSON array. This way the signature will not be valid anymore. Users of contract should treat the contract as if it is not belonging to the company.
+
+If there is an other website of Hacker not belonging to Company that has stolen the private key of a signing account of Company, and creates a fake site stating that the contract is indeed belonging to the Hacker, then the Company can invalidate the signature by setting the `status` field to `compromised` in the returned JSON array. Explorers in case of contradicting CAU URLs should always use the one that was used previously to avoid the attack of Hacker.
 
 #### 2.2.4. Approve of tokens - NOT NEEDED
 
@@ -332,7 +366,7 @@ All the parameters MUST BE private.
 
 This transition MUST create the hash that can be used to create the `authorization` signature offchain. 
 
-This transition is used to generate the `signature` parameter for [``transfer_from_public()`](#tp) transition.
+This transition is used to generate the `signature` parameter for [`transfer_from_public()`](#tp) transition.
 
 This transition is only needed as long as there is no easy alternative offchain solution is found to create the hash.
 
@@ -343,7 +377,11 @@ TODO: implement to example
 <a name="transfer-private"></a>
 ##### 2.2.8.6. Transfer tokens privately - MUST BE IMPLEMENTED
 
-`transfer_private(to: address, amount: u64, credit: credits) -> (credits,credits)`: send from [`self.signer`](#si) (the transition's signer's)  address to `to` address an amount of `amount` of tokens of `credit` privately. 
+TODO: separate to transfer_private() and transfer_private_to_contract()
+
+`transfer_private(to: address, contract: address, amount: u64, credit: credits) -> (credits,credits)`: send from [`self.signer`](#si) (the transition's signer's)  address to `to` address an amount of `amount` of tokens of `credit` privately. 
+
+If called from accounts and not from contracts, then `contract` MUST BE [`ZERO_ADDRESS`](#zero_address), if not transition MUST fail. Only contracts are allowed to set the contracts address to something other than [`ZERO_ADDRESS`](#zero_address) to avoid confusion of `to` and `contract` fields, and thus token loss. 
 
 It MUST return a tuple of two records in the order below:
 1. Remainder record - the remainder of `credit` that is left for sender after sending `amount` of it to `to` address. It MUST HAVE the following fields set. All of which MUST BE private: 
