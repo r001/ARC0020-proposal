@@ -68,8 +68,18 @@ If a feature is termed "MUST HAVE" then it means that the feature must contain s
 
 Whatever follows MUST that must be implemented exactly as it was defined after "MUST" to comply with this ARC.
 
+#### 2.1.10 NEW ALEO FEATURE SHOULD BE IMPLEMENTED
+
+Aleo should implement a feature that this ARC is based upon. Implementation of the feature not crucial for the operation of this ARC, but it is highly recommended to implement it. 
+
+If it is implemented, then it MUST BE implemented in the way described in this ARC. (Or this ARC must be updated.)
+
+#### 2.1.11 NEW ALEO FEATURE MUST BE IMPLEMENTED
+
+Aleo must implement the feature required by this ARC. If the feature is not implemented, then this ARC can not be implemented. 
+
 <a name="zero_address"></a>
-#### 2.1.10. ZERO_ADDRESS
+#### 2.1.12. ZERO_ADDRESS
 
 ```leo
 const ZERO_ADDRESS: address = aleo1yr9ls3d7cn2x2sr359kqq7vjkwnzr4x0e24ju6ysj2pte4c99c8qx0rwwl;
@@ -82,7 +92,7 @@ Because of hashing applied the way above, the chance of an account will have the
 
 
 <a name="mpc"></a>
-#### 2.1.11. MPC (Multi Party Computation)
+#### 2.1.13. MPC (Multi Party Computation)
 
 [Multi Party Computation](https://coinmarketcap.com/academy/article/what-are-multi-party-computation-mpc-wallets) is a decentralized solution of storing a private key in a federated way thus making it impossible for any party (even the ones that are part of the MPC) to have access to the private key.  It can be used to create wallets that can be used to store private keys for contracts. The MPC MUST HAVE the following features:
 1. The private key MUST be used to sign transactions, but  MUST NOT be possible to reconstruct the private key for any parties in the MPC or outside the MPC.
@@ -92,7 +102,7 @@ Because of hashing applied the way above, the chance of an account will have the
 5. Compliance SHOULD BE implemented in the MPC system. This way authorities can request the MPC cluster to reveal a subset of data predefined by smart contracts.
 
 <a name="si"></a>
-#### 2.1.12. `self.signer`
+#### 2.1.14. `self.signer`
 
 The account address whose private key is used to sign the transaction and decode encrypted records, is called `self.signer`. `self.signer` is always an account address. (As long as federated signature scheme is not introduced in Aleo).
 
@@ -101,15 +111,16 @@ The account address whose private key is used to sign the transaction and decode
 See [Aleo documentation](https://developer.aleo.org/leo/language#selfcaller) for details.
 
 <a name="sc"></a>
-#### 2.1.13. `self.caller`
+#### 2.1.15. `self.caller`
 
 The address of an account or a contract that called the transition is called `self.caller`. See figure above for details. 
 
 See [Aleo documentation](https://developer.aleo.org/leo/language#selfcaller) for details.
 
-#### 2.1.14. Hacker
+#### 2.1.16. Hacker
 
-Hacker is an entity that tries to alter the behavior of the system in a way that is not intended by the system. 
+Hacker is an entity that tries to alter the behavior of the system in a way that is not intended by the system, and thus win an illegitimate profit. 
+
 
 ### 2.2. Specification 
 
@@ -375,13 +386,13 @@ Contracts MUST NOT rely on the availability of this transition, as it is not man
 TODO: implement to example
 
 <a name="transfer-private"></a>
-##### 2.2.8.6. Transfer tokens privately - MUST BE IMPLEMENTED
+##### 2.2.8.6. Transfer tokens to accounts privately - MUST BE IMPLEMENTED
 
-TODO: separate to transfer_private() and transfer_private_to_contract()
+TODO: separate to transfer_private() and transfer_private_from_contract()
 
-`transfer_private(to: address, contract: address, amount: u64, credit: credits) -> (credits,credits)`: send from [`self.signer`](#si) (the transition's signer's)  address to `to` address an amount of `amount` of tokens of `credit` privately. 
+`transfer_private(to: address, amount: u64, credit: credits) -> (credits,credits)`: send from [`self.signer`](#si) (the transition's signer's)  address to `to` address an amount of `amount` of tokens of `credit` privately. 
 
-If called from accounts and not from contracts, then `contract` MUST BE [`ZERO_ADDRESS`](#zero_address), if not transition MUST fail. Only contracts are allowed to set the contracts address to something other than [`ZERO_ADDRESS`](#zero_address) to avoid confusion of `to` and `contract` fields, and thus token loss. 
+This function can only be used to send tokens privately to an account. To transfer tokens privately, the token must be sent to a transition of the receiving contract not defined in this ARC. 
 
 It MUST return a tuple of two records in the order below:
 1. Remainder record - the remainder of `credit` that is left for sender after sending `amount` of it to `to` address. It MUST HAVE the following fields set. All of which MUST BE private: 
@@ -397,11 +408,11 @@ It MUST return a tuple of two records in the order below:
 
 It MUST be able to transfer tokens to contracts using this transition.
 
-##### 2.2.8.7. Transfer tokens privately with `contract` property - MUST NOT BE IMLMENTED
+##### 2.2.8.7. Transfer tokens to contracts privately - MUST BE IMPLMENTED
 
-~~`transfer_private(to: address, amount: u64, contract: address, credit: credits) -> (credits,credits)`~~: This function would enable to send private token record to a Smart Contract with MPC, by directly setting the `to` and `contract` fields of the resulting record.
+`transfer_private_to_contract(to: address, amount: u64, contract: address, credit: credits) -> (credits,credits)`: This function enables sending private token record to a Smart Contract with MPC, by directly setting the `to` and `contract` fields of the resulting record. This transition MUST only be called by a contract. If called by an account, then the transition MUST fail. 
 
-This transition MUST NOT BE IMPLEMENTED as users CAN confuse the `to` address with `contract` address, and that leads to token loss. While [pocedure 2.3.1](#deposit-private) can do this safely without having to introduce a new transition.
+Transfer from account must be denied as users CAN confuse the `to` address with `contract` address, and that leads to immediate token loss. While [pocedure 2.3.1](#deposit-private) can do this safely.
 
 ##### 2.2.8.8. Transfer tokens of another account privately - NOT IMPLEMENTABLE
 
@@ -426,7 +437,7 @@ Contracts MUST NOT rely on the availability of this mapping, as it is not mandat
 
 ##### 2.2.10.1 Rationale of not having Total Supply mapping in a mandatory way
 
-Maintaining the `total_supply` in a mapping means that for each `mint()` and `burn()` function this mapping must be updated. And as it is a mapping, it means that all validators must re-run the transaction, which is `O(n)` difficulty, where `n` is the number of instructions. This is much less scalable as if the `total_supply`  is maintained as a record, and each validator only has to check the validity of the proof, which is `O(1)` difficulty. Thus making the contract more scalable.
+Maintaining the `total_supply` in a mapping means that for each `mint()` and `burn()` function this mapping must be updated. And as it is a mapping, it means that all validators must re-run the transaction, which is `O(n)` difficulty, where `n` is the number of instructions in the finalize function. This is much less scalable as if the `total_supply`  is maintained as a record, and each validator only has to check the validity of the proof, which is `O(1)` difficulty. Thus making the contract more scalable.
 
 ## 2.3 Procedures 
 
@@ -463,18 +474,19 @@ This record can not be sent by MPC to any other contract than `aleo1contract`, b
 
 #### 2.3.2. Deposit using `transfer_from_public()` transition
 
-TODO:  create
-
-#### 2.3.3. Deposit using `transfer_public_to_private()` transition
-
-TODO:  create
-
-#### 2.3.4. Deposit using `transfer_private_to_public()` transition
-
-TODO:  create
-
-#### 2.3.5. Deposit using `transfer_private_to_public()` transition
-TODO:  create
+User can send tokens to a contract publicly the following way:
+1. User authorizes the sending of tokens to contract by signing the details of the `transfer_from_public` transaction offline. His steps are as follows:
+    1. Create `auth_hash = BHP256::hash_to_field(from, to, amount, expire)` offline, where 
+        1. `from` is the user's account address,
+        2. `to` is the contracts address,
+        3. `amount` is the aonut of tokens he agrees to send to contract,
+        4. `expire` is the blocknumber when this authorization exprires.
+    2. Signs the hash offline `authorization = aleo.sign(auth_hash, pk)`, Where:
+        1. `auth_hash` is the hash created in previous step.
+        2. `pk` is the private key of his account address.
+2. User calls the `deposit_public(authorization, to, amount, expire, ...)` function of contract. The name is not defined in this ARC, CAN BE any name the contract's creator wants. Within this transition contract
+    1. Checks if `to` is an address where he accepts tokens.
+    2. Calls the `transfer_from_public(authorization, to, amount, self.caller, expire)` function on the token contract, and this way transfers the tokens to himself.
 
 <!-- Describe the architecture. -->
 
