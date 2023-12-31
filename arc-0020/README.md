@@ -10,7 +10,7 @@ created: 12/12/20023 # Date
 
 ## 1. Abstract
 
-There are several ARC-20 implementation standard proposals for the Aleo blockchain. The current ideas try are based on the already successful Ethereum ERC-20 standard. We would like to point out two issues with the present solutions that should be altered namely:
+There are several ARC-20 implementation standard proposals for the Aleo blockchain. This ARC provides a complete token standard for both public and private account/contract operations, and implement the followings:
 1. Replaced onchain `approve()` functionality with [offchain signature](#tp) - `approve()` transition should not be implemented, instead user can agree to send token to a contract offchain using an offchain signature process to approve a transaction, and an onchain function eg [`transfer_from_public()`](#tp) that can apply that signature. This way smart contract interaction does not have to be a two step, but rather a one step process. This solution will save system resources as the approve part is offchain rather than onchain.
 2. Enable [private token records to be sent to smart contracts](#deposit-private) - This problem must be addressed because one of the key selling points of Aleo is its programmable privacy. The author of this ARC also believes that to utilize the UTXO nature of Token records also leads to a much larger scalability than that can be achieved applying mappings and public tokens.
 3. A signature scheme that [connects the contract with the main website](#company-signature) of the project. Thus make it easier for users to trust the token contract, and decrease the possibility of phishing attacks.
@@ -293,12 +293,16 @@ Private DeFi is a must have feature for Aleo to be able to compete with other bl
 
 Scalability can be achived better with records than with mappings. Because with mappings all the validators must rerun the transaction which has `O(n)` difficulty, where `n` is the number of instructions, while with private records it is `O(1)` because all validators have to do is check the validity of a proof. Thus applying records leads to a much more scalable system.  
 
-The easiest implementation of sending private tokens to a smart contract would be to just simply set the `owner` field to that of the destination contract. With currernt setup this is not possible as currently contracts do not have a federated private keys, that would make them possible to encode/decode private record data. So in the optimal solution the contract as an `owner` would have two roles in one:
-1. He would be the controller of the record, meaning he could decide what to do with the record.
-2. He would be the encoder and decoder of the private data.
+![Deposit tokens](./images/transfer-to-contract-private.png)
+The easiest implementation of sending private tokens to a smart contract would be to just simply set the `owner` field to that of the destination contract (2.). With currernt setup this is not possible as currently contracts do not have a private keys, that would allow them to encode/decode private record data. So in the optimal solution the contract as an `owner` would have two capabilities in one:
+1. It would have an address that is authorized to control the record.
+2. It would have a private key that can encode and decode the record data.
 
-Currently (2.) is not possible as contracts do not have a federated private key. So the ownership and the encoding/decoding of private data must be separated. 
+Currently (2.) is not possible as contracts do not have a federated private key. So the ownership and the encoding/decoding of private data must be separated:
+1. The `owner` field of the record will be the address of the MPC cluster that has the federated private key to encode and decode the private data.
+2. The new `contract` field of the record will be the address of the contract that the record is sent to.
 
+The current ARC implementation MUST make sure that MPC can only operate on record by calling the methods of `contract`. MPC MUST NOT be able to call transitions of record contract directly. 
 
 This will reflect in the design of the `credits` record. 
 
@@ -322,10 +326,18 @@ If the `contract` field is not [`ZERO_ADDRESS`](#zero_address) then the this tok
 
 #### 2.2.8. Token transfer transitions - MUST BE IMPLEMENTED
 
-Token transfer transitions are the transitions that can be used to transfer tokens from one account to another. There should be six types of token transfer transitions:
-1. transfer to same account from public to private and vice versa,
-2. that transfers to another account publicly or privately,
-3. and two another, that transfers in the name of another account publicly or privately.
+Token transfer transitions are the transitions that can be used to transfer tokens from one account to another. The following transitions are defined in this ARC:
+1. transfer from public to private and vice versa,
+    1. [`transfer_public_to_private(..)`](#transfer-public-to-private)
+    2. [`transfer_private_to_public(..)`](#transfer-private-to-public)
+2. that transfers to another account or contract publicly,
+    1. [`transfer_public(..)`](#tpa) - transfer to another account
+    2. [`transfer_from_public(...)`](#tp) - transfer to a contract
+    3. [`hash_to_sign(...)`](#hts) - helper function to `transfer_from_public()` to create the hash to be signed
+3. that transfers to an account or contract privately.
+    1. [`transfer_private(..)`](#transfer-private) - transfer to an account
+    2. [`transfer_private_to_contract(..)`](#transfer-private-contract) - transfer to a contract
+
 
 
 <a name="transfer-public-to-private"></a>
@@ -335,22 +347,22 @@ Token transfer transitions are the transitions that can be used to transfer toke
 
 In case the `amount` is greater than the public balance of [`self.signer`](#si) then the transition MUST fail.
 
+<a name="transfer-private-to-public"></a>
 ##### 2.2.8.2. Transfer private to public - MUST BE IMPLEMENTED
 
 `transfer_private_to_public(public to: address, public amount: u64, credit: credits) -> credits`: transfer from private record of `credits` to `to` address in a way that his public balance will increase with `amount` and the private balance of `credit` will decrease with `amount`. MUST return the remainder record of `credits` that is private.
 
 In case the `amount` is greater than the private balance of `credit` then the transition MUST fail.
 
-##### 2.2.8.3. Transfer tokens publicly - MUST BE IMPLEMENTED
+<a name="tpa"></a>
+##### 2.2.8.3. Transfer tokens to account publicly - MUST BE IMPLEMENTED
 
-`transfer_public(public to: address, public amount: u64)`: send from [`self.signer`](#si) (the transition's signer's)  address to `to` address an amount of `amount` of tokens publicly. 
+`transfer_public(public to: address, public amount: u64)`: send from [`self.signer`](#si) (the transition's signer's)  address to `to` address an amount of `amount` of tokens publicly. To address MUST BE an account address.
 
 If the `amount` is greater than the public balance of [`self.signer`](#si) then the transition MUST fail.
 
-It MUST be possible to transfer tokens to contracts using this transition.
-
 <a name="tp"></a>
-##### 2.2.8.4. Transfer tokens of another account publicly - MUST BE IMPLEMENTED
+##### 2.2.8.4. Transfer tokens to contract publicly - MUST BE IMPLEMENTED
 
 `transfer_from_public(  
     public to: address,  
@@ -360,11 +372,14 @@ It MUST be possible to transfer tokens to contracts using this transition.
     authorization: signature,  
 ) -> ()`: transfers from `from` address to `to` address an amount of `amount` tokens using the  `authorization` signature previously created by `from` address offline, if the `block.height` is less than `expire`. 
 
+Please see [2.3.2 Deposit using `transfer_from_public()` transition](#deposit-public) for details.
+
 The `authorization` is NOT public, this way it is impossible for third party to replay attack user's tokens. Note: `allowance()` furnction is not needed in this design, as the signature contains the approval. 
 
 It MUST be possible to transfer tokens to contracts using this transition.
 
-##### 2.2.8.6. Transition creating the hash to be signed - SHOULD BE IMPLEMENTED
+<a name="hts"></a>
+##### 2.2.8.5. Transition creating the hash to be signed - SHOULD BE IMPLEMENTED
 
 `hash_to_sign(  
     to: address,  
@@ -392,7 +407,7 @@ TODO: separate to transfer_private() and transfer_private_from_contract()
 
 `transfer_private(to: address, amount: u64, credit: credits) -> (credits,credits)`: send from [`self.signer`](#si) (the transition's signer's)  address to `to` address an amount of `amount` of tokens of `credit` privately. 
 
-This function can only be used to send tokens privately to an account. To transfer tokens privately, the token must be sent to a transition of the receiving contract not defined in this ARC. 
+This function can only be used to send tokens privately to an account. To transfer tokens privately to a contract, the [`transfer_private_to_contract()`](#transfer-private-contract) must be used by the receiving contract (for details see [pocedure 2.3.1](#deposit-private)). 
 
 It MUST return a tuple of two records in the order below:
 1. Remainder record - the remainder of `credit` that is left for sender after sending `amount` of it to `to` address. It MUST HAVE the following fields set. All of which MUST BE private: 
@@ -408,6 +423,7 @@ It MUST return a tuple of two records in the order below:
 
 It MUST be able to transfer tokens to contracts using this transition.
 
+<a name="transfer-private-contract"></a>
 ##### 2.2.8.7. Transfer tokens to contracts privately - MUST BE IMPLMENTED
 
 `transfer_private_to_contract(to: address, amount: u64, contract: address, credit: credits) -> (credits,credits)`: This function enables sending private token record to a Smart Contract with MPC, by directly setting the `to` and `contract` fields of the resulting record. This transition MUST only be called by a contract. If called by an account, then the transition MUST fail. 
@@ -457,7 +473,7 @@ credit {
 ```
 
 Deposit privately works as follows:
-1. User calls the Smart Contract's `deposit_private(credit, ...)` transition. (The name of the transition is not important, it can be anything.)
+1. User calls the Smart Contract's `deposit_private(credit, ...)` transition. (The name (`deposit_private()`) of the transition can be defined by contract developers.)
 2. During the execution of `deposit_private()`, the Smart Contract calls the `transfer_private(to: aleo1mpc, amount: 10M, credit: credits)` function on ARC20 contract using the record provided by user in previous step.
 3. ARC20 contract consumes the received `credit` record, and creates a new one with the followings:
 
@@ -472,7 +488,10 @@ credit {
 This record can not be sent by MPC to any other contract than `aleo1contract`, because that MUST BE denied by ARC20 contract. MPC can only send the record to `aleo1contract` and the predefined transitions of `aleo1contract` will limit what can be done with the credit record.
 
 
+<a name="deposit-public"></a>
 #### 2.3.2. Deposit using `transfer_from_public()` transition
+
+![Transfer To Contract](./images/transfer_to_contract.png)
 
 User can send tokens to a contract publicly the following way:
 1. User authorizes the sending of tokens to contract by signing the details of the `transfer_from_public` transaction offline. His steps are as follows:
@@ -487,6 +506,7 @@ User can send tokens to a contract publicly the following way:
 2. User calls the `deposit_public(authorization, to, amount, expire, ...)` function of contract. The name is not defined in this ARC, CAN BE any name the contract's creator wants. Within this transition contract
     1. Checks if `to` is an address where he accepts tokens.
     2. Calls the `transfer_from_public(authorization, to, amount, self.caller, expire)` function on the token contract, and this way transfers the tokens to himself.
+
 
 <!-- Describe the architecture. -->
 
