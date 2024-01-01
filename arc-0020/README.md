@@ -882,8 +882,8 @@ This section should introduce any and all critical test cases that need to be co
 ### 2.5. Reference Implementations
 
 Please refer to the reference implementation:
-1. Aleo language [reference implementation](https://github.com/r001/arc20_0001/reference/main.aleo).
-2. Leo language [reference implementation](https://github.com/r001/arc20_0001/src/main.leo).
+1. Aleo language [reference implementation](https://github.com/r001/arc20_0001/blob/main/reference/main.aleo).
+2. Leo language [reference implementation](https://github.com/r001/arc20_0001/blob/main/src/main.leo).
 
 <!-- Link to any related Github branches and/or pull requests. -->
 
